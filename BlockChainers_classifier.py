@@ -15,11 +15,14 @@ from imblearn.over_sampling import SMOTE
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 import math
+import sys
 from sklearn.decomposition import PCA
 import warnings
 warnings.filterwarnings("ignore")
 
 """##***Utility functions***"""
+
+inp=sys.argv[1]
 
 def preprocess(data):
   le1 = preprocessing.LabelEncoder()
@@ -100,7 +103,7 @@ def feature_engineering(testdf,le1,le2,le3,le4,scaler1,scaler2,pca,scaled):
 
 """## **Pre processing**"""
 
-df=pd.read_csv("sample_train.csv")
+df=pd.read_csv("penguins_train.csv")
 cols=list(df.columns)
 discrete=[cols.index("Island"),cols.index("Clutch Completion"),cols.index("Sex"),cols.index("Species")]
 
@@ -108,12 +111,14 @@ null_vals=test_nan(df)
 # print(null_vals)
 df=replace_nan(df,null_vals,discrete)
 null_vals=test_nan(df)
+# print(null_vals)
 for i in range(len(df)):
   if(df.iloc[i,cols.index("Sex")]=="."):
     df.drop([i],inplace=True)
     break
 le1,le2,le3,le4=preprocess(df)
-df = df.sample(frac=1).reset_index(drop=True)
+df = df.reset_index(drop=True)
+# print(df)
 X_train, y_train = df.iloc[:,:-1].values,df.iloc[:,-1:]
 train=pd.DataFrame(X_train,columns=cols[:-1])
 train["Island"]=le1.transform(train["Island"])
@@ -181,7 +186,7 @@ def all_vs_all(train,classifier,xtest):
 
 
 best_model="SVM"
-testdf=pd.read_csv("sample_test.csv")
+testdf=pd.read_csv(inp)
 
 null_vals=test_nan(testdf)
 testdf=replace_nan(testdf,null_vals,discrete)
